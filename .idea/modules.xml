@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/JDND.iml" filepath="$PROJECT_DIR$/.idea/JDND.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exercises/c4 - testing/starter code/Testing.iml" filepath="$PROJECT_DIR$/exercises/c4 - testing/starter code/Testing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/projects/P04-eCommerce Application/starter_code/auth-course.iml" filepath="$PROJECT_DIR$/projects/P04-eCommerce Application/starter_code/auth-course.iml" />
+    </modules>
+  </component>
+</project>
