@@ -1,22 +1,11 @@
 package com.example.demo.model.persistence;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "user_order")
@@ -71,15 +60,46 @@ public class UserOrder {
 	}
 
 	public void setTotal(BigDecimal total) {
-		this.total = total;
-	}
+        this.total = total;
+    }
 
-	public static UserOrder createFromCart(Cart cart) {
-		UserOrder order = new UserOrder();
-		order.setItems(cart.getItems().stream().collect(Collectors.toList()));
-		order.setTotal(cart.getTotal());
-		order.setUser(cart.getUser());
-		return order;
-	}
-	
+    public static UserOrder createFromCart(Cart cart) {
+        UserOrder order = new UserOrder();
+        order.setItems(cart.getItems().stream().collect(Collectors.toList()));
+        order.setTotal(cart.getTotal());
+        order.setUser(cart.getUser());
+        return order;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserOrder userOrder = (UserOrder) o;
+
+        if (id != null ? !id.equals(userOrder.id) : userOrder.id != null) return false;
+        if (items != null ? !items.equals(userOrder.items) : userOrder.items != null) return false;
+        if (user != null ? !user.equals(userOrder.user) : userOrder.user != null) return false;
+        return total != null ? total.equals(userOrder.total) : userOrder.total == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (total != null ? total.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "UserOrder{" +
+                "id=" + id +
+                ", items=" + items +
+                ", user=" + user +
+                ", total=" + total +
+                '}';
+    }
 }
