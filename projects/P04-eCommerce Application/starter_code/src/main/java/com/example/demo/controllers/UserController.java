@@ -5,6 +5,8 @@ import com.example.demo.model.persistence.User;
 import com.example.demo.model.persistence.repositories.CartRepository;
 import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.CreateUserRequest;
+import com.example.demo.model.requests.LoginUserRequest;
+import com.example.demo.security.JWTAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +29,20 @@ public class UserController {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
+
     public UserController() {
     }
 
     @Autowired
-    public UserController(UserRepository userRepository, CartRepository cartRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserController(UserRepository userRepository, CartRepository cartRepository,
+                          BCryptPasswordEncoder bCryptPasswordEncoder, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
+
 
     @GetMapping("/id/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id) {
@@ -64,5 +71,23 @@ public class UserController {
         userRepository.save(user);
         return ResponseEntity.ok(user);
     }
-	
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<User> loginUser(@RequestBody LoginUserRequest loginUserRequest) {
+        User user = new User();
+        user.setUsername(loginUserRequest.getUsername());
+        log.info("User {} logs in ", loginUserRequest.getUsername());
+        if (loginUserRequest.getPassword().length() < 7) {
+            System.out.println("Wrong password...");
+            return ResponseEntity.badRequest().build();
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(loginUserRequest.getPassword()));
+        if (userRepository.findByUsername(loginUserRequest.getUsername()) != null) {
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(user);
+    }
+
 }
