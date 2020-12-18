@@ -6,7 +6,6 @@ import com.example.demo.model.persistence.repositories.CartRepository;
 import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.CreateUserRequest;
 import com.example.demo.model.requests.LoginUserRequest;
-import com.example.demo.security.JWTAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +28,16 @@ public class UserController {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     public UserController() {
     }
 
     @Autowired
     public UserController(UserRepository userRepository, CartRepository cartRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder, JWTAuthenticationFilter jwtAuthenticationFilter) {
+                          BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
 
@@ -65,10 +62,12 @@ public class UserController {
         user.setCart(cart);
         if (createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
             System.out.println("Wrong password...");
+            log.error("Creation of User with username {} fails ", createUserRequest.getUsername());
             return ResponseEntity.badRequest().build();
         }
         user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
         userRepository.save(user);
+        log.info("User {} created. ", createUserRequest.getUsername());
         return ResponseEntity.ok(user);
     }
 
@@ -79,6 +78,7 @@ public class UserController {
         log.info("User {} logs in ", loginUserRequest.getUsername());
         if (loginUserRequest.getPassword().length() < 7) {
             System.out.println("Wrong password...");
+            log.error("Login of User with username {} fails ", loginUserRequest.getUsername());
             return ResponseEntity.badRequest().build();
         }
         user.setPassword(bCryptPasswordEncoder.encode(loginUserRequest.getPassword()));
@@ -86,7 +86,7 @@ public class UserController {
         } else {
             return ResponseEntity.badRequest().build();
         }
-
+        log.info("User {} logged. ", loginUserRequest.getUsername());
         return ResponseEntity.ok(user);
     }
 

@@ -7,6 +7,7 @@ import com.example.demo.model.persistence.repositories.CartRepository;
 import com.example.demo.model.persistence.repositories.ItemRepository;
 import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.ModifyCartRequest;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,8 @@ public class CartController {
     private CartRepository cartRepository;
 
     private ItemRepository itemRepository;
+
+    private static final Logger log = java.util.logging.Logger.getLogger(CartController.class);
 
     public CartController() {
     }
@@ -52,6 +55,7 @@ public class CartController {
         IntStream.range(0, request.getQuantity())
                 .forEach(i -> cart.addItem(item.get()));
         cartRepository.save(cart);
+        log.info("Cart {} created", cart);
         return ResponseEntity.ok(cart);
     }
 
